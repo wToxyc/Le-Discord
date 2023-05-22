@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const User = require('../../models/User');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -21,24 +20,22 @@ module.exports = {
     category: 'moderation',
     syntax: '<user> <reason>',
     permission: 'Gérer les messages',
-    async run(interaction) {
+    async run(interaction, client) {
         const user = interaction.options.getUser('user');
         const reason = interaction.options.getString('reason');
         
-        if (!await User.exists({ id: user.id })) {
-            await new User({ id: user.id }).save();
+        if (!client.db[user.id]) {
+            client.db[user.id] = {
+                messages: 0,
+                voiceTime: 0,
+                warns: []
+            }
         }
-
-        const userData = await User.findOne({ id: user.id });
-
-        userData.warns.push({
-            date: Date.now(),
+        client.db[user.id].warns.push({
             reason: reason,
+            date: Date.now(),
             mod: interaction.user.id
         });
-
-        await userData.save();
-
         interaction.reply(`**${user} a été warn pour \`${reason}\`.**`);
     }
 }

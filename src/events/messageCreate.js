@@ -1,15 +1,15 @@
-const User = require('../models/User');
-
 module.exports = {
     name: 'messageCreate',
-    async run(message) {
+    async run(message, client) {
         if (message.author.bot || !message.member) return;
-        if (!await User.exists({ id: message.member.id })) {
-            await new User({ id: message.member.id }).save();
+        if (!client.db[message.member.id]) {
+            client.db[message.member.id] = {
+                messages: 0,
+                voiceTime: 0,
+                warns: []
+            }
         }
-        const user = await User.findOne({ id: message.member.id });
-        user.stats.messages++;
-        await user.save();
+        client.db[message.member.id].messages++;
 
         if (message.channel.id === '1106643179450675271') {
             const reactions = ['👍', '👎'];

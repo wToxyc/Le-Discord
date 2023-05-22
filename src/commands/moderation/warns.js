@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require('discord.js');
-const User = require('../../models/User');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -15,20 +14,19 @@ module.exports = {
     category: 'moderation',
     syntax: '<user>',
     permission: 'Gérer les messages',
-    async run(interaction) {
+    async run(interaction, client) {
         const user = interaction.options.getUser('user');
         const userData = await User.findOne({ id: user.id });
 
-        if (await User.exists({ id: user.id }) && userData.warns.length > 0) {
+        if (client.db[user.id]) {
             const warnList = new EmbedBuilder()
                 .setAuthor({
                     name: user.tag,
                     iconURL: user.displayAvatarURL({ dynamic: true })
                 })
-                .setColor('Blurple')
                 .setTitle('Liste des warns');
             
-            userData.warns.forEach((warn, index) => {
+            client.db[user.id].warns.forEach((warn, index) => {
                 const warnDate = Math.floor(warn.date / 1000);
                 warnList.addFields({
                     name: `Warn n°${index + 1}`,

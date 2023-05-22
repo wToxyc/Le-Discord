@@ -1,5 +1,4 @@
 const { ActivityType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const User = require('../models/User');
 require('colors');
 
 module.exports = {
@@ -16,13 +15,14 @@ module.exports = {
             client.user.setActivity(`${guild.memberCount} membres`, { type: ActivityType.Watching });
             statsChannel.setName(`💎〡Membres : ${guild.memberCount}`);
             members.forEach(async (member) => {
-                console.log(member);
-                if (!await User.exists({ id: member.user.id })) {
-                    await new User({ id: member.user.id }).save();
+                if (!client.db[member.id]) {
+                    client.db[member.id] = {
+                        messages: 0,
+                        voiceTime: 0,
+                        warns: []
+                    }
                 }
-                const user = await User.findOne({ id: member.user.id });
-                user.stats.voiceTime++;
-                await user.save();
+                client.db[member.id].voiceTime++;
             });
         }, 60000);
 

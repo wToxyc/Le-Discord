@@ -1,5 +1,5 @@
 const { Client, Collection } = require('discord.js');
-const { connectDb } = require('./services/mongoose');
+const fs = require('fs');
 const { token } = require('./config.json');
 require('colors');
 
@@ -12,5 +12,11 @@ const handlers = ['CommandUtil', 'EventUtil'];
 handlers.forEach((handler) => require(`./util/handlers/${handler}`)(client));
 
 connectDb().catch((err) => { throw err; });
+
+client.db = require('./database.json');
+
+setInterval(() => {
+    fs.writeFileSync(__dirname + '/database.json', JSON.stringify(client.db));
+}, 1.8e+6);
 
 client.login(token);

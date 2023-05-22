@@ -1,5 +1,4 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const User = require('../../models/User');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,28 +21,17 @@ module.exports = {
     category: 'moderation',
     syntax: '<user> <warn>',
     permission: 'Gérer les messages',
-    async run(interaction) {
+    async run(interaction, client) {
         const user = interaction.options.getUser('user');
-        const warn = interaction.options.getInteger('warn');
+        const warn = interaction.options.getInteger('warn') - 1;
 
-        const userData = await User.findOne({ id: user.id });
-
-        if (await User.exists({ id: user.id }) && userData.warns.length > 0) {
-            if (userData.warns[warn - 1]) {
-                userData.warns.splice(warn - 1, 1);
-                await userData.save();
-
-                interaction.reply(`**Le warn \`n°${warn}\` de ${user} a été retiré.**`);
-            } else {
-                interaction.reply({
-                    ephemeral: true,
-                    content: 'Ce warn n\'existe pas !'
-                });
-            }
+        if (client.db[user.id] && client.db[user.id].warns[warn]) {
+            client.db[user.id].warns.splice(warn, 1);
+            interaction.reply(`**Le warn \`n°${warn + 1}\` de ${user} a été retiré.**`);
         } else {
             interaction.reply({
                 ephemeral: true,
-                content: `${user} n'a aucun warn.`
+                content: 'Ce warn n\'existe pas !'
             });
         }
     }
