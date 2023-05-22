@@ -11,8 +11,6 @@ client.events = new Collection();
 const handlers = ['CommandUtil', 'EventUtil'];
 handlers.forEach((handler) => require(`./util/handlers/${handler}`)(client));
 
-connectDb().catch((err) => { throw err; });
-
 client.db = require('./database.json');
 
 setInterval(() => {
