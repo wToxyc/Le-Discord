@@ -11,15 +11,16 @@ module.exports = {
 
         const statsChannel = guild.channels.cache.get('1106642679682576394');
         const members = guild.members.cache.filter((member) => !member.user.bot && member.voice.channel);
-
+        
         setInterval(() => {
             client.user.setActivity(`${guild.memberCount} membres`, { type: ActivityType.Watching });
             statsChannel.setName(`💎〡Membres : ${guild.memberCount}`);
             members.forEach(async (member) => {
-                if (!await User.exists({ id: member.id })) {
-                    await new User({ id: member.id }).save();
+                console.log(member);
+                if (!await User.exists({ id: member.user.id })) {
+                    await new User({ id: member.user.id }).save();
                 }
-                const user = await User.findOne({ id: member.id });
+                const user = await User.findOne({ id: member.user.id });
                 user.stats.voiceTime++;
                 await user.save();
             });

@@ -11,6 +11,6 @@ client.events = new Collection();
 const handlers = ['CommandUtil', 'EventUtil'];
 handlers.forEach((handler) => require(`./util/handlers/${handler}`)(client));
 
-connectDb().catch(() => console.log('[ERROR] Failed to connect the database!'.red));
+connectDb().catch((err) => { throw err; });
 
 client.login(token);
