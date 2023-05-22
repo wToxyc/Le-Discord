@@ -32,9 +32,14 @@ module.exports = {
                             value: Number(stats.messages).toString()
                         }, {
                             name: 'Activité vocale',
-                            value: `${voiceTime.hours}h${voiceTime.minutes}m`
+                            value: `\`${voiceTime.hours}\` heures et \`${voiceTime.minutes}\` minutes`
                         })
                 ]
+            });
+        } else {
+            interaction.reply({
+                ephemeral: true,
+                content: 'Aucune statistique trouvée pour cet utilisateur.'
             });
         }
     }

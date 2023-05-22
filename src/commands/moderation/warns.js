@@ -16,9 +16,8 @@ module.exports = {
     permission: 'Gérer les messages',
     async run(interaction, client) {
         const user = interaction.options.getUser('user');
-        const userData = await User.findOne({ id: user.id });
 
-        if (client.db[user.id]) {
+        if (client.db[user.id] && client.db[user.id].warns.length > 0) {
             const warnList = new EmbedBuilder()
                 .setAuthor({
                     name: user.tag,
